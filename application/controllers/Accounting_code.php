@@ -44,17 +44,44 @@ class Accounting_code extends CI_Controller {
 					'name' => $this->input->post('name'),
 					'code' => $this->input->post('code'),
 					'default_post_type' => $this->input->post('default_post_type'),
+					'category' => $this->input->post('category'),
 				);
-				$this->Code_model->add_code($code_data);
+				if($this->Code_model->add_code($code_data))
+				{
+					$this->session->set_flashdata('form_message', 'Successfully added.');
+					redirect('accounting_code/add');
+				}
 			}
 		}
 
 		$this->load->view('template-main', $data, FALSE);	
 	}
 
-	public function edit()
+	public function edit($code_id)
 	{
+		if($code_id==NULL)
+		{
+			$code_id = $this->uri->segment(3);
+		}
 
+		if($this->input->post())
+		{
+			$code_data = array(
+				'name' => $this->input->post('name'),
+				'code' => $this->input->post('code'),
+				'default_post_type' => $this->input->post('default_post_type'),
+				'category' => $this->input->post('category'),
+			);
+			if($this->Code_model->update_code($code_id, $code_data))
+			{
+				$this->session->set_flashdata('form_message', 'Successfully updated.');
+			}
+		}
+		$data = array(
+			'page' => 'code/form',
+			'code' => $this->Code_model->get_code($code_id)
+		);
+		$this->load->view('template-main', $data, FALSE);
 	}
 
 }
